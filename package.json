@@ -12,7 +12,8 @@
     "next": "14.0.0",
     "react": "^18",
     "react-dom": "^18",
-    "sass": "^1.69.5"
+    "sass": "^1.69.5",
+    "webm-to-wav-converter": "^1.1.0"
   },
   "devDependencies": {
     "eslint": "^8",
