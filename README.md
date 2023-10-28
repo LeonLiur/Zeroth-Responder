@@ -1,1 +1,1 @@
-# Manu-AI
+# Manual.ai
