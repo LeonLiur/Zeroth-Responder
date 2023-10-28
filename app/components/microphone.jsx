@@ -21,15 +21,24 @@ export default function MicrophoneComponent() {
         recognitionRef.current.interimResults = true;
 
         // Event handler for speech recognition results
-        recognitionRef.current.onresult = (event) => {
+        recognitionRef.current.onresult = async (event) => {
             let trans = ""
             for(const result of event.results){
                 trans += result[0].transcript
             }
 
             console.log(trans)
+            trans = trans.charAt(0).toUpperCase() + trans.slice(1)
             // Log the recognition results and update the transcript state
-            setTranscript(trans.charAt(0).toUpperCase() + trans.slice(1));
+            setTranscript(trans);
+
+            const res = await(fetch("/api/v1/query", {
+                method: "POST",
+                body: JSON.stringify({
+                    text: trans,
+                }),
+            })).then(data => JSON.parse(data))
+
         };
 
         // Start the speech recognition
