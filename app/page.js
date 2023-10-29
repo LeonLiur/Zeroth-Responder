@@ -20,13 +20,13 @@ export default function Home() {
   const [triage, setTriage] = useState()
   return (
     <main className={styles.main}>
+      {triage && <Summary points={triage.summary_points} level={triage.priority}/>}
       {backNForth.map((elem) => (
-        <MessageBlock role={elem.role} text={elem.text} />
+        <MessageBlock role={elem.role} text={elem.content} />
       ))}
-      <Summary text={'Summary'} />
       <Controls />
 
-      <MicrophoneComponent
+      {!triage && <MicrophoneComponent
         setGptReply={setInstructions}
         setMicrophoneDoneRecording={setIsReady}
         problem_description={problemDescription}
@@ -37,17 +37,9 @@ export default function Home() {
         setBackNForth={setBackNForth}
         setLoading={setLoading}
         setTriage={setTriage}
-      />
+      />}
       <SpeakerComponent text_in={instructions} isDone={isReady} />
-      {loading && (<img src="/images/loading.gif" />)}
-      {triage && 
-      <>
-        <p>Urgency level {triage.priority}</p>
-        {triage.summary_points.map((elem) => (
-          <p>{elem}</p>
-        ))}
-      </>
-      }
+      {loading && (<img src="/images/loading.gif" height={100} width={100}/>)}
     </main >
   )
 }

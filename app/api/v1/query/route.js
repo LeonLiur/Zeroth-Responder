@@ -67,7 +67,7 @@ export async function POST(req) {
 
       const gptResponse1 = await openai.chat.completions.create({
         model: "gpt-3.5-turbo-16k",
-        temperature: 1,
+        temperature: 0.5,
         messages: [
           {
             role: "assistant",
@@ -106,7 +106,7 @@ export async function POST(req) {
     case 2:
       const gptResponse2 = await openai.chat.completions.create({
         model: "gpt-3.5-turbo-16k",
-        temperature: 1,
+        temperature: 0.5,
         messages: req_json.history.concat({
           "role": "system",
           "content": "Using the previous conversation, triage the emergency and return a JSON object as follows: \

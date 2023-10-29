@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react'
 import styles from '@/styles/controls.module.scss'
 
 export default function Controls() {
-  const [secElapsed, setSecElapsed] = useState(50)
+  const [secElapsed, setSecElapsed] = useState(0)
   useEffect(() => {
     setInterval(() => {
       setSecElapsed((prev) => prev + 1)

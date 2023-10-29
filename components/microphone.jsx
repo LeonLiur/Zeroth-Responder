@@ -10,7 +10,6 @@ export default function MicrophoneComponent({ setGptReply, setMicrophoneDoneReco
     const [transcript, setTranscript] = useState("");
     const [stage, setStage] = useState(0)
     const [qNo, setQNo] = useState(0)
-    const [justDidFirstQ, setJustDidFirstQ] = useState(false)
     // Reference to store the SpeechRecognition instance
     const recognitionRef = useRef();
 
@@ -120,6 +119,7 @@ export default function MicrophoneComponent({ setGptReply, setMicrophoneDoneReco
                         setLoading(false)
                         
                         setTriage(res2.triage)
+                        setGptReply("Help has been dispatched and is on their way.")
                         break;
                     }
 
@@ -127,7 +127,6 @@ export default function MicrophoneComponent({ setGptReply, setMicrophoneDoneReco
                     console.log(`Operator q${qNo + 1}: ${questions[qNo + 1]}`)
                     setMicrophoneDoneRecording(true)
                     break
-                case 3:
             }
 
         }
@@ -147,7 +146,7 @@ export default function MicrophoneComponent({ setGptReply, setMicrophoneDoneReco
         <div className="flex items-center justify-center h-screen w-full">
             <div className="w-full">
                 {(isRecording || transcript) && (
-                    <div>
+                    <div className="w-full">
                         <div>
                             {isRecording && (
                                 <p>Recording...</p>
@@ -162,23 +161,14 @@ export default function MicrophoneComponent({ setGptReply, setMicrophoneDoneReco
                         </div>
                     </div>
                 )}
-
+            </div>
+            <div className="w-full">
                 {isRecording ? (
                     // Button for stopping recording
-                    <button
-                        onClick={handleToggleRecording}
-                        className="mt-10 m-auto flex items-center justify-center bg-red-400 hover:bg-red-500 rounded-full w-20 h-20 focus:outline-none"
-                    >
-                        STOP
-                    </button>
+                    <img src="/images/Microphone 14.png" onClick={handleToggleRecording} width={50} height={50}></img>
                 ) : (
                     // Button for starting recording
-                    <button
-                        onClick={handleToggleRecording}
-                        className="mt-10 m-auto flex items-center justify-center bg-blue-400 hover:bg-blue-500 rounded-full w-20 h-20 focus:outline-none"
-                    >
-                        GO
-                    </button>
+                    <img src="/images/Microphone 14 (1)..png" onClick={handleToggleRecording} width={50} height={50}></img>
                 )}
             </div>
         </div >
