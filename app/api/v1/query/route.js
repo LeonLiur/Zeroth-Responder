@@ -59,7 +59,7 @@ export async function POST(req) {
     messages: [
       {
         role: "system",
-        content: `You are to be a trained emergency dispatcher, a caller is in danger and is reporting their situation to you.
+        content: `You are to be an emergency dispatcher, a caller is in danger and is reporting their situation to you.
         You will be provided a question and a JSON array containing semantically similar embeddings to the question queried from a vector 
         database containing your instruction manual. Give them instructions on what they should do, keep in mind that you must be professional
         as a 911 operator and use the adequate language.`,
@@ -71,6 +71,5 @@ export async function POST(req) {
     ],
   })
 
-  console.log(gptResponse)
   return NextResponse.json({ msg: gptResponse.choices[0].message.content }, { status: 200 })
 }
