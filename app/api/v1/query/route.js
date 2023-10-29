@@ -1,4 +1,3 @@
-import { cookies } from 'next/headers'
 import { NextResponse } from 'next/server'
 import { MilvusClient } from '@zilliz/milvus2-sdk-node'
 
@@ -56,7 +55,7 @@ export async function GET(req) {
         content: req_json.text + JSON.stringify(context),
       },
     ],
-  }).then(data=>JSON.parse(data));
+  }).then(data => JSON.parse(data));
 
 
   return NextResponse.json({ msg: gptResponse.choices[0].message.content }, { status: 200 })
