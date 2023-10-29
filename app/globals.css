@@ -38,6 +38,17 @@
   --callout-border-rgb: 172, 175, 176;
   --card-rgb: 180, 185, 188;
   --card-border-rgb: 131, 134, 135;
+
+  --blue-100: #0a0f1d;
+  --blue-200: #191f32;
+  --blue-300: #1e2845;
+  --blue-400: #323d5e;
+  --green-500: #297462;
+  --green-600: #3a957f;
+  --red-600: #e83737;
+  --yellow-300: #746329;
+  --yellow-400: #947f37;
+  --white: #fff;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -86,13 +97,8 @@ body {
 }
 
 body {
-  color: rgb(var(--foreground-rgb));
-  background: linear-gradient(
-      to bottom,
-      transparent,
-      rgb(var(--background-end-rgb))
-    )
-    rgb(var(--background-start-rgb));
+  color: var(--white);
+  background: var(--blue-100);
 }
 
 a {

@@ -1,9 +1,12 @@
-"use client";
+'use client'
 
-import MicrophoneComponent from './components/microphone';
-import SpeakerComponent from './components/speaker';
+import MicrophoneComponent from '@/components/microphone'
+import SpeakerComponent from '@/components/speaker'
+import Controls from '@/components/controls'
+import MessageBlock from '@/components/messageBlock'
+import Summary from '@/components/summary'
 import styles from './page.module.scss'
-import { useState } from 'react';
+import { useState } from 'react'
 
 // This is the main component of our application
 export default function Home() {
@@ -17,6 +20,12 @@ export default function Home() {
   const [triage, setTriage] = useState()
   return (
     <main className={styles.main}>
+      {backNForth.map((elem) => (
+        <MessageBlock role={elem.role} text={elem.text} />
+      ))}
+      <Summary text={'Summary'} />
+      <Controls />
+
       <MicrophoneComponent
         setGptReply={setInstructions}
         setMicrophoneDoneRecording={setIsReady}
@@ -31,7 +40,14 @@ export default function Home() {
       />
       <SpeakerComponent text_in={instructions} isDone={isReady} />
       {loading && (<img src="/images/loading.gif" />)}
-      <p>{triage}</p>
-    </main>
+      {triage && 
+      <>
+        <p>Urgency level {triage.priority}</p>
+        {triage.summary_points.map((elem) => (
+          <p>{elem}</p>
+        ))}
+      </>
+      }
+    </main >
   )
 }
