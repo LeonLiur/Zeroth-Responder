@@ -8,41 +8,46 @@ export default function MicrophoneComponent() {
     // State variables to manage recording status, completion, and transcript
     const [isRecording, setIsRecording] = useState(false);
     const [transcript, setTranscript] = useState("");
-
+    const [microphoneDoneRecording, setMicrophoneDoneRecording] = useState(true);
+    const [gptInstructions, setGptInstructions] = useState(null);
     // Reference to store the SpeechRecognition instance
     const recognitionRef = useRef();
 
+    // const timer = setTimeout(() => {
+    //     const res = await(fetch("/api/v1/query", {
+    //         method: "POST",
+    //         body: JSON.stringify({
+    //             text: transcript,
+    //         }),
+    //     })).then(data => JSON.parse(data))
+
+    //     console.log(res.msg)
+    //     setGptInstructions(res.msg)
+    // }, 5000);
+
     // Function to start recording
     const startRecording = () => {
-        setIsRecording(true);
         // Create a new SpeechRecognition instance and configure it
         recognitionRef.current = new window.webkitSpeechRecognition();
         recognitionRef.current.continuous = true;
         recognitionRef.current.interimResults = true;
 
         // Event handler for speech recognition results
-        recognitionRef.current.onresult = async (event) => {
+        recognitionRef.current.onresult = (event) => {
             let trans = ""
             for(const result of event.results){
                 trans += result[0].transcript
             }
 
-            console.log(trans)
             trans = trans.charAt(0).toUpperCase() + trans.slice(1)
             // Log the recognition results and update the transcript state
             setTranscript(trans);
-
-            const res = await(fetch("/api/v1/query", {
-                method: "POST",
-                body: JSON.stringify({
-                    text: trans,
-                }),
-            })).then(data => JSON.parse(data))
-
         };
 
         // Start the speech recognition
         recognitionRef.current.start();
+        setIsRecording(true)
+        setMicrophoneDoneRecording(false)
     };
 
     // Cleanup effect when the component unmounts
@@ -56,10 +61,21 @@ export default function MicrophoneComponent() {
     }, []);
 
     // Function to stop recording
-    const stopRecording = () => {
+    const stopRecording = async () => {
         if (recognitionRef.current) {
-            // Stop the speech recognition and mark recording as complete
+            setMicrophoneDoneRecording(true)
             recognitionRef.current.stop();
+            setIsRecording(false)
+
+            const res = await(fetch("/api/v1/query", {
+                method: "POST",
+                body: JSON.stringify({
+                    text: transcript,
+                }),
+            })).then(data => JSON.parse(data))
+    
+            console.log(res.msg)
+            setGptInstructions(res.msg)
         }
     };
 
@@ -70,7 +86,6 @@ export default function MicrophoneComponent() {
         } else {
             stopRecording();
         }
-        setIsRecording(!isRecording);
     };
 
     // Render the microphone component with appropriate UI based on recording state
