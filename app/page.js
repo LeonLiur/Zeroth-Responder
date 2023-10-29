@@ -8,11 +8,11 @@ import { useState } from 'react';
 // This is the main component of our application
 export default function Home() {
   const [instructions, setInstructions] = useState("");
-  const [doneRecording, setDoneRecording] = useState(true);
+  const [isReady, setIsReady] = useState(false);
   return (
     <main className={styles.main}>
-      <MicrophoneComponent setGptInstructions={setInstructions} setMicrophoneDoneRecording={setDoneRecording} />
-      <SpeakerComponent text={instructions} isDone={doneRecording}/>
+      <MicrophoneComponent setGptInstructions={setInstructions} setMicrophoneDoneRecording={setIsReady} />
+      <SpeakerComponent text_in={instructions} isDone={isReady}/>
     </main>
   )
 }

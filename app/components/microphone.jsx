@@ -4,26 +4,12 @@
 import { useEffect, useState, useRef } from "react";
 
 // Export the MicrophoneComponent function component
-export default function MicrophoneComponent() {
+export default function MicrophoneComponent({setGptInstructions, setMicrophoneDoneRecording}) {
     // State variables to manage recording status, completion, and transcript
     const [isRecording, setIsRecording] = useState(false);
     const [transcript, setTranscript] = useState("");
-    const [microphoneDoneRecording, setMicrophoneDoneRecording] = useState(true);
-    const [gptInstructions, setGptInstructions] = useState(null);
     // Reference to store the SpeechRecognition instance
     const recognitionRef = useRef();
-
-    // const timer = setTimeout(() => {
-    //     const res = await(fetch("/api/v1/query", {
-    //         method: "POST",
-    //         body: JSON.stringify({
-    //             text: transcript,
-    //         }),
-    //     })).then(data => JSON.parse(data))
-
-    //     console.log(res.msg)
-    //     setGptInstructions(res.msg)
-    // }, 5000);
 
     // Function to start recording
     const startRecording = () => {
@@ -63,7 +49,6 @@ export default function MicrophoneComponent() {
     // Function to stop recording
     const stopRecording = async () => {
         if (recognitionRef.current) {
-            setMicrophoneDoneRecording(true)
             recognitionRef.current.stop();
             setIsRecording(false)
 
@@ -73,10 +58,11 @@ export default function MicrophoneComponent() {
                 body: JSON.stringify({
                     "text": transcript,
                 }),
-            })).then(data => JSON.parse(data))
+            })).then(data => data.json())
     
             console.log(res.msg)
             setGptInstructions(res.msg)
+            setMicrophoneDoneRecording(true)
         }
     };
 

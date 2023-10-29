@@ -59,14 +59,17 @@ export async function POST(req) {
     messages: [
       {
         role: "system",
-        content: `You are to be an emergency dispatcher, a caller is in danger and is reporting their situation to you.
-        You will be provided a question and a JSON array containing semantically similar embeddings to the question queried from a vector 
-        database containing your instruction manual. Give them instructions on what they should do, keep in mind that you must be professional
-        as a 911 operator and use the adequate language.`,
+        content: `You are a 911 emergency dispatcher, a caller is in danger and is reporting their situation to you.
+        You will be provided a question and an array of paragraphs that contain questions that may be relevant to helping the caller. Ask them one question or give them one instruction at a time. Keep it short and understandable in a paragraph format.
+        Do not ever tell the caller to call emergency services, this will waste precious time. 
+        
+        Example:`,
+        // content: "whatever the user says, reply with \'cheese\'"
       },
       {
         role: "user",
         content: req_json.text + JSON.stringify(context),
+        // content: req_json.text
       },
     ],
   })

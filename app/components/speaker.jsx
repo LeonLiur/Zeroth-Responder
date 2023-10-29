@@ -1,15 +1,16 @@
-"use client"
+"use client";
 
-import React, { useEffect } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 
-export default function SpeakerComponent({text, isDone}) {
-    let utterance = new SpeechSynthesisUtterance();
+export default function SpeakerComponent({text_in, isDone}) {
+    const [text, setText] = useState("");
+
     useEffect(() => {
-        utterance.text = text
         if(isDone){
-            speechSynthesis.speak(utterance)
+            const speechUtterance = new window.SpeechSynthesisUtterance(text_in);
+            window.speechSynthesis.speak(speechUtterance)
         }
-    }, [text, isDone])
+    }, [text_in, isDone])
     return (
         <>
             {!isDone && <img src="/images/loading.gif"></img>}
