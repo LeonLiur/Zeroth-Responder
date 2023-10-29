@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server'
 import { MilvusClient } from '@zilliz/milvus2-sdk-node'
-import OpenAI from 'openai';
+import OpenAI from 'openai'
 
 require('dotenv').config()
 
@@ -11,55 +11,74 @@ export async function POST(req) {
   const client = new MilvusClient({ address, token })
   const openai = new OpenAI({
     apiKey: process.env.OPENAI_KEY,
-  });
+  })
 
-  const req_json = await req.json();
-  if (!req_json.problem_description || (typeof req_json.stage === 'undefined')) {
-    return NextResponse.json({ msg: 'Usage: body {problem_description: text for request, stage: stage of request}' }, { status: 400 })
+  const req_json = await req.json()
+  if (!req_json.problem_description || typeof req_json.stage === 'undefined') {
+    return NextResponse.json(
+      {
+        msg: 'Usage: body {problem_description: text for request, stage: stage of request}',
+      },
+      { status: 400 }
+    )
   }
 
   switch (req_json.stage) {
     case 0:
-      return NextResponse.json({ msg: "Okay, I'm here to help you out. Stay calm, I just need a bit more information. What is your name?" }, { status: 200 })
+      return NextResponse.json(
+        {
+          msg: "Okay, I'm here to help you out. Stay calm, I just need a bit more information. What is your name?",
+        },
+        { status: 200 }
+      )
     case 1:
       //vectorize the vector
       const vector_res = await fetch('https://api.openai.com/v1/embeddings', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${process.env.OPENAI_KEY}`,
+          Authorization: `Bearer ${process.env.OPENAI_KEY}`,
         },
         body: JSON.stringify({
           input: req_json.problem_description,
           model: 'text-embedding-ada-002',
         }),
-      }).then(response => response.json())
+      }).then((response) => response.json())
       const vector_in = vector_res.data[0].embedding
 
       const vector_aid = await fetch('https://api.openai.com/v1/embeddings', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${process.env.OPENAI_KEY}`,
+          Authorization: `Bearer ${process.env.OPENAI_KEY}`,
         },
         body: JSON.stringify({
-          input: "Follow up questions to take",
+          input: 'Follow up questions to take',
           model: 'text-embedding-ada-002',
         }),
-      }).then(response => response.json())
+      }).then((response) => response.json())
       const vector_aid_in = vector_aid.data[0].embedding
-
 
       // searching the DB
       const res = await client.search({
-        collection_name: "operator_training",
+        collection_name: 'operator_training',
         vectors: [vector_in, vector_aid_in],
         output_fields: ['text'],
-        limit: 5
+        limit: 5,
       })
 
       if (res.status.error_code != 'Success') {
-        return NextResponse.json({ msg: "DB query error (" + res.status.error_code + ":" + res.status.reason + ")" }, { status: 405 })
+        return NextResponse.json(
+          {
+            msg:
+              'DB query error (' +
+              res.status.error_code +
+              ':' +
+              res.status.reason +
+              ')',
+          },
+          { status: 405 }
+        )
       }
 
       // take up to five results as context
@@ -70,33 +89,31 @@ export async function POST(req) {
         temperature: 0.5,
         messages: [
           {
-            role: "assistant",
-            content: "911, what is your emergency?"
-          }
-          ,
-          {
-            role: "user",
-            content: req_json.problem_description
+            role: 'assistant',
+            content: '911, what is your emergency?',
           },
           {
-            role: "assistant",
-            content: "Okay, I'm here to help you out. Stay calm, I just need a bit more information. What is your name?"
-          }
-          ,
+            role: 'user',
+            content: req_json.problem_description,
+          },
           {
-            role: "user",
-            content: req_json.last_reply
-          }
-          ,
+            role: 'assistant',
+            content:
+              "Okay, I'm here to help you out. Stay calm, I just need a bit more information. What is your name?",
+          },
           {
-            role: "system",
+            role: 'user',
+            content: req_json.last_reply,
+          },
+          {
+            role: 'system',
             content: `You are a 911 operator talking to a caller in danger. Use the JSON array passed to you containing semantically similar vectors queried from a vector database containing your training
-            manual to return an array of strings with length 5 containing follow-up questions. Do not ask anything about emergency services since they are already calling you. Ask one question about where they are. Return nothing but the array.`
+            manual to return an array of strings with length 5 containing follow-up questions. Do not ask anything about emergency services since they are already calling you. Ask one question about where they are. Return nothing but the array.`,
           },
           {
-            role: "system",
-            content: JSON.stringify(context)
-          }
+            role: 'system',
+            content: JSON.stringify(context),
+          },
         ],
       })
 
@@ -108,15 +125,27 @@ export async function POST(req) {
         model: "gpt-3.5-turbo-16k",
         temperature: 0.5,
         messages: req_json.history.concat({
-          "role": "system",
-          "content": "Using the previous conversation, triage the emergency and return a JSON object as follows: \
+          role: 'system',
+          content:
+            'Using the previous conversation, triage the emergency and return a JSON object as follows: \
           {priority, summary_points: []}, where priority is a number from 1 to 5, 1 being the most urgent. Summary_points must contain 4\
-          strings, collectively summarizing the circumstances of the caller"
-        })
+          strings, collectively summarizing the circumstances of the caller',
+        }),
       })
 
       const triage = JSON.parse(gptResponse2.choices[0].message.content)
-
+      fetch('https://qyywhmcascmnzzrxfagn.supabase.co/rest/v1/callers', {
+        method: 'POST',
+        headers: {
+          apikey:
+            'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InF5eXdobWNhc2Ntbnp6cnhmYWduIiwicm9sZSI6ImFub24iLCJpYXQiOjE2OTg1OTk2NjYsImV4cCI6MjAxNDE3NTY2Nn0.1n2TZy24Ee1ydjpzPreCjMfeV6vMx9POu6DvhvNUOCw',
+          Authorization:
+            'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InF5eXdobWNhc2Ntbnp6cnhmYWduIiwicm9sZSI6ImFub24iLCJpYXQiOjE2OTg1OTk2NjYsImV4cCI6MjAxNDE3NTY2Nn0.1n2TZy24Ee1ydjpzPreCjMfeV6vMx9POu6DvhvNUOCw',
+          'Content-Type': 'application/json',
+          Prefer: 'return=minimal',
+        },
+        body: JSON.stringify({ data: triage }),
+      })
       return NextResponse.json({ triage: triage }, { status: 200 })
   }
 }
