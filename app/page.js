@@ -3,6 +3,7 @@
 import MicrophoneComponent from '@/components/microphone'
 import SpeakerComponent from '@/components/speaker'
 import Controls from '@/components/controls'
+import MessageBlock from '@/components/messageBlock'
 import styles from './page.module.scss'
 import { useState } from 'react'
 
@@ -10,14 +11,26 @@ import { useState } from 'react'
 export default function Home() {
   const [instructions, setInstructions] = useState('')
   const [isReady, setIsReady] = useState(false)
+  const history = [
+    {
+      role: 'assistant',
+      text: 'hello world',
+    },
+    {
+      role: 'user',
+      text: 'hello world',
+    },
+  ]
   return (
     <main className={styles.main}>
-      <MicrophoneComponent
-        setGptInstructions={setInstructions}
-        setMicrophoneDoneRecording={setIsReady}
-      />
-      <SpeakerComponent text_in={instructions} isDone={isReady} />
+      <div className={styles.messageContainer}>
+        {history.map((elem) => (
+          <MessageBlock role={elem.role} text={elem.text} />
+        ))}
+      </div>
       <Controls />
+
+      <SpeakerComponent text_in={instructions} isDone={isReady} />
     </main>
   )
 }

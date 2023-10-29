@@ -1,4 +1,5 @@
 .container {
+  height: 250px;
   width: 100dvw;
   display: flex;
   flex-direction: column;
@@ -23,6 +24,7 @@
   h2 {
     font-size: 36px;
     margin-top: -24px;
+    font-variant-numeric: tabular-nums;
   }
 
   h4 {
