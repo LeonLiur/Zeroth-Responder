@@ -7,7 +7,7 @@ export default function Controls() {
   const [secElapsed, setSecElapsed] = useState(0)
   useEffect(() => {
     setInterval(() => {
-      setSecElapsed((prev) => prev + 1)
+      setSecElapsed((prev) => prev + 0.5)
     }, 1000)
   }, [])
 

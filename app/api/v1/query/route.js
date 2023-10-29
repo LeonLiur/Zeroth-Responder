@@ -108,7 +108,7 @@ export async function POST(req) {
           {
             role: 'system',
             content: `You are a 911 operator talking to a caller in danger. Use the JSON array passed to you containing semantically similar vectors queried from a vector database containing your training
-            manual to return an array of strings with length 5 containing follow-up questions. Do not ask anything about emergency services since they are already calling you. Ask one question about where they are. Return nothing but the array.`,
+            manual to return an array of strings with length 5 containing follow-up questions. Do not ask anything about emergency services since they are already calling you. Ask one and only one question about locations and other questions about the emergency itself. Return nothing but the array.`,
           },
           {
             role: 'system',
