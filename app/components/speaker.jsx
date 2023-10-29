@@ -13,7 +13,7 @@ export default function SpeakerComponent({text_in, isDone}) {
     }, [text_in, isDone])
     return (
         <>
-            {!isDone && <img src="/images/loading.gif"></img>}
+            
         </>
     )
 }
