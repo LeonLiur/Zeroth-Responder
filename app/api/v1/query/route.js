@@ -21,7 +21,7 @@ export async function POST(req) {
   switch (req_json.stage) {
     case 0:
       return NextResponse.json({ msg: "Okay, I'm here to help you out. Stay calm, I just need a bit more information. What is your name?" }, { status: 200 })
-    case 1: 
+    case 1:
       //vectorize the vector
       const vector_res = await fetch('https://api.openai.com/v1/embeddings', {
         method: 'POST',
@@ -91,7 +91,7 @@ export async function POST(req) {
           {
             role: "system",
             content: `You are a 911 operator talking to a caller in danger. Use the JSON array passed to you containing semantically similar vectors queried from a vector database containing your training
-            manual to return an array of strings with length 5 containing follow-up questions. Return nothing but the array`
+            manual to return an array of strings with length 5 containing follow-up questions. Do not ask anything about emergency services since they are already calling you. Ask one question about where they are. Return nothing but the array.`
           },
           {
             role: "system",
@@ -104,6 +104,19 @@ export async function POST(req) {
 
       return NextResponse.json({ questions: questions }, { status: 200 })
     case 2:
+      const gptResponse2 = await openai.chat.completions.create({
+        model: "gpt-3.5-turbo-16k",
+        temperature: 1,
+        messages: req_json.history.concat({
+          "role": "system",
+          "content": "Using the previous conversation, triage the emergency and return a JSON object as follows: \
+          {priority, summary_points: []}, where priority is a number from 1 to 5, 1 being the most urgent. Summary_points must contain 4\
+          strings, collectively summarizing the circumstances of the caller"
+        })
+      })
 
+      const triage = JSON.parse(gptResponse2.choices[0].message.content)
+
+      return NextResponse.json({ triage: triage }, { status: 200 })
   }
 }

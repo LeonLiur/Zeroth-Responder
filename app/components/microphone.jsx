@@ -4,12 +4,12 @@
 import { useEffect, useState, useRef } from "react";
 
 // Export the MicrophoneComponent function component
-export default function MicrophoneComponent({ setGptReply, setMicrophoneDoneRecording, problem_description, setProblemDescription, questions, setQuestions, backNForth, setBackNForth, setLoading }) {
+export default function MicrophoneComponent({ setGptReply, setMicrophoneDoneRecording, problem_description, setProblemDescription, questions, setQuestions, backNForth, setBackNForth, setLoading, setTriage }) {
     // State variables to manage recording status, completion, and transcript
     const [isRecording, setIsRecording] = useState(false);
     const [transcript, setTranscript] = useState("");
     const [stage, setStage] = useState(0)
-    const [qNo, setQNo] = useState(1)
+    const [qNo, setQNo] = useState(0)
     const [justDidFirstQ, setJustDidFirstQ] = useState(false)
     // Reference to store the SpeechRecognition instance
     const recognitionRef = useRef();
@@ -96,36 +96,38 @@ export default function MicrophoneComponent({ setGptReply, setMicrophoneDoneReco
                     setGptReply(questions_gen[0])
                     console.log(`Operator q${0}: ${questions_gen[0]}`)
                     setStage(stage + 1)
-                    setJustDidFirstQ(true)
                     break
                 case 2:
-                    if (justDidFirstQ) {
-                        console.log(`Caller answer q${0}: ${0}`)
-                        setBackNForth(backNForth.concat({ "role": "assistant", "content": questions[0] }))
-                        setBackNForth(backNForth.concat({ "role": "user", "content": transcript }))
-                        setJustDidFirstQ(false)
-                    }else{
-                        console.log(`Caller answer q${qNo}: ${transcript}`)
-                        setBackNForth(backNForth.concat({ "role": "assistant", "content": questions[qNo] }))
-                        setBackNForth(backNForth.concat({ "role": "user", "content": transcript }))
-                    }
-                    setQNo(qNo + 1)
+                    console.log(`Caller answer q${qNo}: ${transcript}`)
+                    setBackNForth((prev) => prev.concat([{ "role": "assistant", "content": questions[qNo]}, { "role": "user", "content": transcript }]))
 
+                    setQNo((prev) => prev + 1)
 
-                    if (qNo == questions.length) {
+                    if (qNo+1 == questions.length) {
                         setGptReply("Please hold")
                         console.log("Operator: Please hold")
+                        setLoading(true);
                         setMicrophoneDoneRecording(true)
                         // TODO add summarization here
-                        break
+                        const res2 = await fetch("/api/v1/query", {
+                            method: "POST",
+                            body: JSON.stringify({
+                                "problem_description": problem_description,
+                                "stage": 2,
+                                "history": backNForth.concat([{ "role": "assistant", "content": questions[qNo]}, { "role": "user", "content": transcript }])
+                            })
+                        }).then(data => data.json())
+                        setLoading(false)
+                        
+                        setTriage(res2.triage)
+                        break;
                     }
 
-                    setGptReply(questions[qNo])
-                    console.log(`Operator q${qNo}: ${questions[qNo]}`)
+                    setGptReply(questions[qNo + 1])
+                    console.log(`Operator q${qNo + 1}: ${questions[qNo + 1]}`)
                     setMicrophoneDoneRecording(true)
                     break
                 case 3:
-
             }
 
         }

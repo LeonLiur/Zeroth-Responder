@@ -14,6 +14,7 @@ export default function Home() {
   const [questions, setQuestions] = useState()
   const [backNForth, setBackNForth] = useState([])
   const [loading, setLoading] = useState(false)
+  const [triage, setTriage] = useState()
   return (
     <main className={styles.main}>
       <MicrophoneComponent
@@ -26,9 +27,11 @@ export default function Home() {
         questions={questions}
         setBackNForth={setBackNForth}
         setLoading={setLoading}
+        setTriage={setTriage}
       />
       <SpeakerComponent text_in={instructions} isDone={isReady} />
       {loading && (<img src="/images/loading.gif" />)}
+      <p>{triage}</p>
     </main>
   )
 }
