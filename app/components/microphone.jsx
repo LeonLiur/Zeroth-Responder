@@ -67,10 +67,11 @@ export default function MicrophoneComponent() {
             recognitionRef.current.stop();
             setIsRecording(false)
 
+            console.log("sending transcript: " + transcript)
             const res = await(fetch("/api/v1/query", {
                 method: "POST",
                 body: JSON.stringify({
-                    text: transcript,
+                    "text": transcript,
                 }),
             })).then(data => JSON.parse(data))
     

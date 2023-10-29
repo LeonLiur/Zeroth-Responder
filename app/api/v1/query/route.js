@@ -1,40 +1,54 @@
 import { NextResponse } from 'next/server'
 import { MilvusClient } from '@zilliz/milvus2-sdk-node'
+import OpenAI from 'openai';
+
 
 require('dotenv').config()
 
 
-export async function GET(req) {
-  const MILVUS_URL = process.env.MILVUS_URL
-  // - For a serverless cluster, use an API key as the token.
-  // - For a dedicated cluster, use the cluster credentials as the token
-  // in the format of 'user:password'.
-  const MILVUS_KEY = process.env.MILVUS_KEY
+export async function POST(req) {
+  const address = process.env.MILVUS_URL
+  const token = process.env.MILVUS_KEY
 
-  const client = new MilvusClient({ MILVUS_URL, MILVUS_KEY })
+  const client = new MilvusClient({ address, token })
 
-  // vectorizing the input vector
-  const req_json = JSON.parse(req.body);
+  const req_json = await req.json();
+
   if (!req_json.text) {
     return NextResponse.json({ msg: 'Usage: body {text: text for request}' }, { status: 400 })
   }
 
   //vectorize the vector
-  const vector_in = vectorize(req_json.text)
+  const vector_res = await fetch('https://api.openai.com/v1/embeddings', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${process.env.OPENAI_KEY}`,
+    },
+    body: JSON.stringify({
+      input: req_json.text,
+      model: 'text-embedding-ada-002',
+    }),
+  }).then(response => response.json())
+
+  const vector_in = vector_res.data[0].embedding
+
 
   // searching the DB
-  res = await client.search({
-    collection_name: "NAME",
+  const res = await client.search({
+    collection_name: "operator_training",
     vector: vector_in,
-    output_fields: ['text']
-  }).then(data => JSON.parse(data))
+    output_fields: ['text'],
+    limit: 5
+  })
 
   if (res.status.error_code != 'Success') {
     return NextResponse.json({ msg: "DB query error (" + res.status.error_code + ":" + res.status.reason + ")" }, { status: 405 })
   }
 
   // take up to five results as context
-  const context = res.results.slice(0, min(5, len(res.results)))
+  const context = res.results
+
   const openai = new OpenAI({
     apiKey: process.env.OPENAI_KEY,
   });
@@ -55,8 +69,8 @@ export async function GET(req) {
         content: req_json.text + JSON.stringify(context),
       },
     ],
-  }).then(data => JSON.parse(data));
+  })
 
-
+  console.log(gptResponse)
   return NextResponse.json({ msg: gptResponse.choices[0].message.content }, { status: 200 })
 }

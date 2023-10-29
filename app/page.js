@@ -12,7 +12,7 @@ export default function Home() {
   return (
     <main className={styles.main}>
       <MicrophoneComponent setGptInstructions={setInstructions} setMicrophoneDoneRecording={setDoneRecording} />
-      <SpeakerComponent text={"hi hello i am under the water"} isDone={true}/>
+      <SpeakerComponent text={"hi hello i am under the water"} isDone={false}/>
     </main>
   )
 }
