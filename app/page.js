@@ -4,6 +4,7 @@ import MicrophoneComponent from '@/components/microphone'
 import SpeakerComponent from '@/components/speaker'
 import Controls from '@/components/controls'
 import MessageBlock from '@/components/messageBlock'
+import Summary from '@/components/summary'
 import styles from './page.module.scss'
 import { useState } from 'react'
 
@@ -27,6 +28,7 @@ export default function Home() {
         {history.map((elem) => (
           <MessageBlock role={elem.role} text={elem.text} />
         ))}
+        <Summary text={'Summary'} />
       </div>
       <Controls />
 

@@ -1,0 +1,13 @@
+.container {
+  width: calc(100dvw - 48px);
+  max-width: 512px;
+  padding: 20px;
+  background: var(--yellow-300);
+  border-color: var(--yellow-400);
+  border-radius: 16px;
+  border-bottom-width: 6px !important;
+
+  p {
+    color: #ffffff80;
+  }
+}
