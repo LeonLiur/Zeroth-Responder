@@ -2,6 +2,7 @@
 
 // Import necessary modules and components
 import { useEffect, useState, useRef } from "react";
+import Image from 'next/image'
 
 // Export the MicrophoneComponent function component
 export default function MicrophoneComponent({ setGptReply, setMicrophoneDoneRecording, problem_description, setProblemDescription, questions, setQuestions, backNForth, setBackNForth, setLoading, setTriage }) {
@@ -165,10 +166,10 @@ export default function MicrophoneComponent({ setGptReply, setMicrophoneDoneReco
             <div className="w-full">
                 {isRecording ? (
                     // Button for stopping recording
-                    <img src="/images/Microphone 14.png" onClick={handleToggleRecording} width={50} height={50}></img>
+                    <Image src="/images/Microphone 14.png" onClick={handleToggleRecording} width={50} height={50} />
                 ) : (
                     // Button for starting recording
-                    <img src="/images/Microphone 14 (1)..png" onClick={handleToggleRecording} width={50} height={50}></img>
+                    <Image src="/images/Microphone 14 (1)..png" onClick={handleToggleRecording} width={50} height={50} />
                 )}
             </div>
         </div >
