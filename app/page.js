@@ -21,8 +21,8 @@ export default function Home() {
   return (
     <main className={styles.main}>
       {triage && <Summary points={triage.summary_points} level={triage.priority}/>}
-      {backNForth.map((elem) => (
-        <MessageBlock role={elem.role} text={elem.content} />
+      {backNForth.map((elem, idx) => (
+        <MessageBlock key={idx} role={elem.role} text={elem.content} />
       ))}
       <Controls />
 

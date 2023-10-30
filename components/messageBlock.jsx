@@ -3,6 +3,7 @@ import styles from '@/styles/messageBlock.module.scss'
 export default function MessageBlock({ role, text }) {
   return (
     <div
+      key={idx}
       className={styles.container}
       style={{
         background:
