@@ -7,8 +7,8 @@ export default function Summary({ points, level }) {
       <h3>Summary</h3>
       <h3><b>Priority level: {level}</b></h3>
       <ul>
-        {points.map((elem) => (
-          <li key="{elem}">{elem}</li>
+        {points.map((elem, idx) => (
+          <li key={idx}>{elem}</li>
         ))}
       </ul>
     </div>
