@@ -138,9 +138,9 @@ export async function POST(req) {
         method: 'POST',
         headers: {
           apikey:
-            'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InF5eXdobWNhc2Ntbnp6cnhmYWduIiwicm9sZSI6ImFub24iLCJpYXQiOjE2OTg1OTk2NjYsImV4cCI6MjAxNDE3NTY2Nn0.1n2TZy24Ee1ydjpzPreCjMfeV6vMx9POu6DvhvNUOCw',
+            `${process.env.OPENAI_KEY}`,
           Authorization:
-            'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InF5eXdobWNhc2Ntbnp6cnhmYWduIiwicm9sZSI6ImFub24iLCJpYXQiOjE2OTg1OTk2NjYsImV4cCI6MjAxNDE3NTY2Nn0.1n2TZy24Ee1ydjpzPreCjMfeV6vMx9POu6DvhvNUOCw',
+            `Bearer ${process.env.OPENAI_KEY}`,
           'Content-Type': 'application/json',
           Prefer: 'return=minimal',
         },
